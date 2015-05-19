@@ -137,7 +137,7 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		if (e.getType() == null) {
 			Symbol sym = symbolTable.lookupInAllScopes(e.getName());
 			if (sym == null) {
-				Error.msg("Undeclared varaible: ", e);
+				Error.msg("Undeclared variable: ", e);
 			}
 			Type t = sym.getType();
 			e.setType(t);
@@ -181,33 +181,66 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		throw new RuntimeException(
 				"OffsetExpression encountered during static analysis.");
 	}
-
+	
+	//
+	// START OF CUSTOM CODE //
+	//
+	
 	@Override
-	public void visit(FunctionDefinition f) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+	public void visit(FunctionDefinition f) {		
+		String name = f.getName();
+		if (symbolTable.lookupInAllScopes(name) != null) {
+			Error.msg(name + " already declared!", f);
+		}
+
+		Type type = f.getReturnType();		
+		Symbol sym = Symbol.newVariableSymbol(name, type, false);
+		symbolTable.insert(sym);
+
+		for (Declaration d : f.getParameters()) {
+			this.visit(d);
+		}
+		f.getBody().accept(this);
 	}
 
 	@Override
 	public void visit(FunctionCallExpression e) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+		String name = e.getName();
+		Symbol s = symbolTable.lookupInAllScopes(name);
+		if (s == null) {
+			Error.msg(name + " was not declared!", e);
+		} else if (e.getType() != s.getType()) {
+			Error.msg(e.getType() + " did not match return type declared!", e);
+		}
+		//
+		// NOT SURE IF WE'RE SUPPOSED TO DO SOMETHING HERE TO CALL FUNCTIONS
+		//
 	}
 
 	@Override
 	public void visit(ReturnStatement s) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+		//
+		// NOT SURE IF I NEED TO CHECK THE RETURN TYPE HERE
+		//
+		s.getExpression().accept(this);
 	}
 
 	@Override
 	public void visit(Program p) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
-		
-		/* OLD DEFINITION BELOW
 		symbolTable = new SymbolTable();
-		p.getBlockStatement().accept(this);
-		*/
+		symbolTable.createNewScope();
+		for (FunctionDefinition f : p.getFunctionList()) {
+			//symbolTable.createNewScope();
+			f.accept(this);
+			//symbolTable.dropScope();
+		}
+		symbolTable.dropScope();
+		
+		//
+		// I think the way I'm doing scopes here is wrong
+		// Either I think I have too many small scopes
+		// OR
+		// I'm only keeping 1 scope for the whole program, and so stuff keeps conflicting
+		//
 	}
 }
