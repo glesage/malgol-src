@@ -187,9 +187,10 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 	//
 	
 	@Override
-	public void visit(FunctionDefinition f) {		
+	public void visit(FunctionDefinition f) {
+		
 		String name = f.getName();
-		if (symbolTable.lookupInAllScopes(name) != null) {
+		if (symbolTable.lookupInCurrentScope(name) != null) {
 			Error.msg(name + " already declared!", f);
 		}
 
@@ -197,10 +198,12 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		Symbol sym = Symbol.newVariableSymbol(name, type, false);
 		symbolTable.insert(sym);
 
+		symbolTable.createNewScope();
 		for (Declaration d : f.getParameters()) {
-			this.visit(d);
+			d.accept(this);
 		}
 		f.getBody().accept(this);
+		symbolTable.dropScope();
 	}
 
 	@Override
@@ -230,9 +233,7 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		symbolTable = new SymbolTable();
 		symbolTable.createNewScope();
 		for (FunctionDefinition f : p.getFunctionList()) {
-			//symbolTable.createNewScope();
 			f.accept(this);
-			//symbolTable.dropScope();
 		}
 		symbolTable.dropScope();
 		
