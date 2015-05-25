@@ -9,7 +9,7 @@ public class FunctionType extends Type {
 	private int numParams;
 	private Type returnType;
 
-	public FunctionType(int size) {
+	public FunctionType() {
 		super(-1);
 	}
 	
@@ -23,6 +23,12 @@ public class FunctionType extends Type {
 	
 	public Type getReturnType() {
 		return returnType;
+	}
+
+	private static final FunctionType unique = new FunctionType();
+
+	public static FunctionType singleton() {
+		return unique;
 	}
 
 	@Override
