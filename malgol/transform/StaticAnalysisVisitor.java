@@ -212,9 +212,12 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		Symbol s = symbolTable.lookupInAllScopes(name);
 		if (s == null) {
 			Error.msg(name + " was not declared!", e);
-		} else if (e.getType() != s.getType()) {
-			Error.msg(e.getType() + " did not match return type declared!", e);
 		}
+		
+		for (Expression arg : e.getArguments()) {
+			arg.accept(this);
+		}
+		
 		//
 		// NOT SURE IF WE'RE SUPPOSED TO DO SOMETHING HERE TO CALL FUNCTIONS
 		//
@@ -225,6 +228,9 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		//
 		// NOT SURE IF I NEED TO CHECK THE RETURN TYPE HERE
 		//
+		Symbol symbol = Symbol.newStructSymbol("",s.getExpression().getType());
+		symbolTable.insert(symbol);
+		
 		s.getExpression().accept(this);
 	}
 
@@ -236,12 +242,5 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 			f.accept(this);
 		}
 		symbolTable.dropScope();
-		
-		//
-		// I think the way I'm doing scopes here is wrong
-		// Either I think I have too many small scopes
-		// OR
-		// I'm only keeping 1 scope for the whole program, and so stuff keeps conflicting
-		//
 	}
 }
