@@ -5,6 +5,8 @@ import malgol.common.*;
 import malgol.type.*;
 import malgol.util.Error;
 
+import java.util.function.Function;
+
 /**
  * 
  * @author WMarrero
@@ -194,6 +196,9 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 			Error.msg(name + " already declared!", f);
 		}
 
+		Symbol symbol = Symbol.newFunctionSymbol("",f.getReturnType());
+		symbolTable.insert(symbol);
+
 		Type type = f.getReturnType();		
 		Symbol sym = Symbol.newVariableSymbol(name, type, false);
 		symbolTable.insert(sym);
@@ -217,7 +222,9 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		for (Expression arg : e.getArguments()) {
 			arg.accept(this);
 		}
-		
+
+		e.setType(symbolTable.lookupInAllScopes("").getType());
+
 		//
 		// NOT SURE IF WE'RE SUPPOSED TO DO SOMETHING HERE TO CALL FUNCTIONS
 		//
