@@ -196,8 +196,11 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 			Error.msg(name + " already declared!", f);
 		}
 
+		Symbol symbol = Symbol.newFunctionSymbol("",f.getReturnType());
+		symbolTable.insert(symbol);
+
 		Type type = f.getReturnType();		
-		Symbol sym = Symbol.newFunctionSymbol(name, type);
+		Symbol sym = Symbol.newVariableSymbol(name, type, false);
 		symbolTable.insert(sym);
 
 		symbolTable.createNewScope();
@@ -220,7 +223,7 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 			arg.accept(this);
 		}
 
-		e.setType(symbolTable.lookupInAllScopes(e.getName()).getType());
+		e.setType(symbolTable.lookupInAllScopes("").getType());
 
 		//
 		// NOT SURE IF WE'RE SUPPOSED TO DO SOMETHING HERE TO CALL FUNCTIONS
