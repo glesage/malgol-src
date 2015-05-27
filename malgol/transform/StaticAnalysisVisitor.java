@@ -5,6 +5,8 @@ import malgol.common.*;
 import malgol.type.*;
 import malgol.util.Error;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.function.Function;
 
 /**
@@ -195,7 +197,13 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 			Error.msg(name + " already declared!", f);
 		}
 
-		Type type = f.getReturnType();		
+		// Set everything we gotta know about the function
+		// - Return type
+		// - Number of parameters/arguments
+		FunctionType type = new FunctionType();
+		type.setReturnType(f.getReturnType());
+		type.setNumParams(f.getParameters().size());
+
 		Symbol sym = Symbol.newFunctionSymbol(name, type);
 		symbolTable.insert(sym);
 
@@ -216,12 +224,19 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		} else if (!s.isFunction()) {
 			Error.msg("Trying to call a non-function:", e);
 		}
-		
-		for (Expression arg : e.getArguments()) {
-			arg.accept(this);
+
+		FunctionType type = (FunctionType)symbolTable.lookupInAllScopes(e.getName()).getType();
+		e.setType(type.getReturnType());
+
+		if (e.getArguments().size() != type.getNumParams()) {
+			Error.msg("Argument count mismatch:", e);
 		}
 
-		e.setType(symbolTable.lookupInAllScopes(e.getName()).getType());
+		List<Expression> args = e.getArguments();
+
+		for (int i=0;i<args.size(); i++) {
+			args.get(i).accept(this);
+		}
 
 		//
 		// NOT SURE IF WE'RE SUPPOSED TO DO SOMETHING HERE TO CALL FUNCTIONS

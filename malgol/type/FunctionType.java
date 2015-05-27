@@ -1,11 +1,11 @@
 package malgol.type;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import malgol.ast.Expression;
 
 public class FunctionType extends Type {
-	private LinkedList<Expression> paramTypes;
+	private List<Type> paramTypes;
 	private int numParams;
 	private Type returnType;
 
@@ -13,16 +13,25 @@ public class FunctionType extends Type {
 		super(-1);
 	}
 	
-	public LinkedList<Expression> getParamTypes(){
+	public List<Type> getParamTypes() {
 		return paramTypes;
+	}
+	public void setParamTypes(List<Type> paramTypes) {
+		this.paramTypes = paramTypes;
 	}
 	
 	public int getNumParams() {
 		return numParams;
 	}
+	public void setNumParams(int numParams) {
+		this.numParams = numParams;
+	}
 	
 	public Type getReturnType() {
 		return returnType;
+	}
+	public void setReturnType(Type returnType) {
+		this.returnType = returnType;
 	}
 
 	private static final FunctionType unique = new FunctionType();
