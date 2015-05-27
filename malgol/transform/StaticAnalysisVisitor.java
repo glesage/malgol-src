@@ -187,7 +187,6 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 	//
 	// START OF CUSTOM CODE //
 	//
-	
 	@Override
 	public void visit(FunctionDefinition f) {
 		
@@ -214,6 +213,8 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		Symbol s = symbolTable.lookupInAllScopes(name);
 		if (s == null) {
 			Error.msg(name + " was not declared!", e);
+		} else if (!s.isFunction()) {
+			Error.msg("Trying to call a non-function:", e);
 		}
 		
 		for (Expression arg : e.getArguments()) {
