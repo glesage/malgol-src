@@ -5,6 +5,7 @@ import malgol.common.*;
 import malgol.type.*;
 import malgol.util.Error;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -197,12 +198,19 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 			Error.msg(name + " already declared!", f);
 		}
 
+		List<Type> paramTypes = new ArrayList<>();
+		for (Declaration param : f.getParameters()) {
+			paramTypes.add(param.getType());
+		}
+
 		// Set everything we gotta know about the function
 		// - Return type
 		// - Number of parameters/arguments
+		// - Type of parameters/arguments
 		FunctionType type = new FunctionType();
 		type.setReturnType(f.getReturnType());
 		type.setNumParams(f.getParameters().size());
+		type.setParamTypes(paramTypes);
 
 		Symbol sym = Symbol.newFunctionSymbol(name, type);
 		symbolTable.insert(sym);
@@ -232,22 +240,19 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 			Error.msg("Argument count mismatch:", e);
 		}
 
+		// Accept each parameter & check its type
+		List<Type> argTypes = type.getParamTypes();
 		List<Expression> args = e.getArguments();
-
 		for (int i=0;i<args.size(); i++) {
 			args.get(i).accept(this);
+			if (args.get(i).getType() != argTypes.get(i)) {
+				Error.msg("Argument type mismatch in slot " + Integer.toString(i+1) + " of ", e);
+			}
 		}
-
-		//
-		// NOT SURE IF WE'RE SUPPOSED TO DO SOMETHING HERE TO CALL FUNCTIONS
-		//
 	}
 
 	@Override
 	public void visit(ReturnStatement s) {
-		//
-		// NOT SURE IF I NEED TO CHECK THE RETURN TYPE HERE
-		//
 		Symbol symbol = Symbol.newStructSymbol("",s.getExpression().getType());
 		symbolTable.insert(symbol);
 		
