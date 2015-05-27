@@ -255,6 +255,9 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 	public void visit(ReturnStatement s) {
 		Symbol symbol = Symbol.newStructSymbol("",s.getExpression().getType());
 		symbolTable.insert(symbol);
+
+		// HERE we check the return type compared to the function's
+		// but no idea how to get the funtion since we need the name
 		
 		s.getExpression().accept(this);
 	}
