@@ -245,7 +245,7 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		List<Expression> args = e.getArguments();
 		for (int i=0;i<args.size(); i++) {
 			args.get(i).accept(this);
-			if (args.get(i).getType() != argTypes.get(i)) {
+			if (!args.get(i).getType().toString().equals(argTypes.get(i).toString())) {
 				Error.msg("Argument type mismatch in slot " + Integer.toString(i+1) + " of ", e);
 			}
 		}
