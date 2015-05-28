@@ -16,6 +16,7 @@ import java.util.function.Function;
  */
 public class StaticAnalysisVisitor implements ASTVisitor {
 	private SymbolTable symbolTable = null;
+	private Type returnType;
 
 	@Override
 	public void visit(BlockStatement s) {
@@ -212,6 +213,8 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 		type.setNumParams(f.getParameters().size());
 		type.setParamTypes(paramTypes);
 
+		returnType = f.getReturnType();
+
 		Symbol sym = Symbol.newFunctionSymbol(name, type);
 		symbolTable.insert(sym);
 
@@ -253,13 +256,11 @@ public class StaticAnalysisVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ReturnStatement s) {
-		Symbol symbol = Symbol.newStructSymbol("",s.getExpression().getType());
-		symbolTable.insert(symbol);
-
-		// HERE we check the return type compared to the function's
-		// but no idea how to get the funtion since we need the name
-		
 		s.getExpression().accept(this);
+
+		if(!s.getExpression().getType().toString().equals(returnType.toString())){
+			Error.msg("Return type mismatch",s);
+		}
 	}
 
 	@Override
