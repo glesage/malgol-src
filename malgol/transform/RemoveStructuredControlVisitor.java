@@ -187,7 +187,7 @@ public class RemoveStructuredControlVisitor implements ASTVisitor {
 	@Override
 	public void visit(FunctionCallExpression e) {
 		throw new RuntimeException(
-				"Remvoing Structured Control visiting expression");
+				"Removing Structured Control visiting expression");
 	}
 
 	@Override
