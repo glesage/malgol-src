@@ -235,6 +235,7 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     	// TODO
          expressionResult = e;
 
+        // I think here we need to implement the passing of arguments or smths
     }
 
     @Override
