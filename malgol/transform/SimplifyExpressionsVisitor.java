@@ -244,7 +244,9 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     public void visit(ReturnStatement s) {
     	// TODO
         s.getExpression().accept(this);
-        expressionResult = s.getExpression();
+        ReturnStatement returnStatement = new ReturnStatement(s.getFirstToken(),expressionResult);
+        newStatements.add(returnStatement);
+
         functionDefinition = null;
     }
 
