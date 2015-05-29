@@ -221,8 +221,6 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     @Override
     public void visit(FunctionDefinition f) {
     	// TODO
-    	//throw new RuntimeException("You need to implement this.");
-
         f.getBody().accept(this);
 
         for(Declaration declaration : f.getParameters()){
@@ -235,7 +233,6 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     @Override
     public void visit(FunctionCallExpression e) {
     	// TODO
-    	//throw new RuntimeException("You need to implement this.");
          expressionResult = e;
 
     }
@@ -253,7 +250,6 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     @Override
 	public void visit(Program p) {
     	// TODO
-    	//throw new RuntimeException("You need to implement this.");
         List<FunctionDefinition> resultList = new ArrayList<>();
 
         for(FunctionDefinition function : p.getFunctionList()){
