@@ -10,12 +10,13 @@ import malgol.common.Label;
 import java.util.LinkedList;
 
 /**
- * 
+ *
  * @author WMarrero
  */
 public class RemoveStructuredControlVisitor implements ASTVisitor {
 
 	private Statement statementResult;
+	private FunctionDefinition functionDefinitionResult;
 	private Program programResult;
 
 	public Program getResult() {
@@ -171,31 +172,37 @@ public class RemoveStructuredControlVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(FunctionDefinition f) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+		f.getBody().accept(this);
+		BlockStatement b = null;
+		if (statementResult instanceof BlockStatement)
+			b = (BlockStatement) statementResult;
+		else
+			throw new RuntimeException(
+					"Removing Structured Control visitor: Function body returned non block statement");
+		functionDefinitionResult = new FunctionDefinition(f.getFirstToken(),
+				f.getReturnType(), f.getName(), f.getParameters(), b);
+		statementResult = null;
 	}
 
 	@Override
 	public void visit(FunctionCallExpression e) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+		throw new RuntimeException(
+				"Remvoing Structured Control visiting expression");
 	}
 
 	@Override
 	public void visit(ReturnStatement s) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+		statementResult = s;
+		functionDefinitionResult = null;
 	}
 
 	@Override
 	public void visit(Program p) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
-		
-		/* OLD DEFINITION BELOW
-		p.getBlockStatement().accept(this);
-		BlockStatement temp = (BlockStatement) statementResult;
-		programResult = new Program(temp);
-		*/
+		LinkedList<FunctionDefinition> resultList = new LinkedList<FunctionDefinition>();
+		for(FunctionDefinition f : p.getFunctionList()) {
+			f.accept(this);
+			resultList.add(functionDefinitionResult);
+		}
+		programResult = new Program(resultList);
 	}
 }
