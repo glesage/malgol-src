@@ -1,17 +1,18 @@
 package malgol.ast;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class Program extends ASTNode {
-	private LinkedList<FunctionDefinition> functionList;
+	private List<FunctionDefinition> functionList;
 	
-	public Program(LinkedList<FunctionDefinition> fL) {
+	public Program(List<FunctionDefinition> fL) {
 		super(null);
 		functionList = fL;
 	}
 
 	
-	public LinkedList<FunctionDefinition> getFunctionList() {
+	public List<FunctionDefinition> getFunctionList() {
 		return functionList;
 	}
 

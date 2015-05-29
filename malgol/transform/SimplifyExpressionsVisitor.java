@@ -4,11 +4,14 @@
  */
 package malgol.transform;
 
+import jdk.nashorn.internal.ir.Block;
 import malgol.ast.*;
 import malgol.common.Operator;
 import malgol.type.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 //public class SimplifyExpressionsVisitor extends RemoveStructuredControlVisitor {}
 
@@ -18,6 +21,8 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     private LinkedList<Declaration> newDeclarations = null;
     private LinkedList<Statement> newStatements = null;
     private Program programResult = null;
+    private FunctionDefinition functionDefinition = null;
+    private BlockStatement blockStatement = null;
     
     public Program getResult() {
     	return programResult;
@@ -42,6 +47,7 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
         newBlock.addLabels(b.getLabels());
         freshResultVariables();
         newStatements.add(newBlock);
+        blockStatement = newBlock;
     }
 
     @Override
@@ -209,29 +215,51 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
         // There should not be any pointers yet!
         assert(false) : "OffsetExpression found DURING expression simplification";
     }
+
+    ///CUSTOM CODE STARTS HERE!!!///
     
     @Override
     public void visit(FunctionDefinition f) {
     	// TODO
-    	throw new RuntimeException("You need to implement this.");
+    	//throw new RuntimeException("You need to implement this.");
+
+        f.getBody().accept(this);
+
+        for(Declaration declaration : f.getParameters()){
+            declaration.accept(this);
+        }
+
+        functionDefinition = new FunctionDefinition(f.getFirstToken(), f.getReturnType(), f.getName(), newDeclarations, blockStatement);
     }
 
     @Override
     public void visit(FunctionCallExpression e) {
     	// TODO
-    	throw new RuntimeException("You need to implement this.");
+    	//throw new RuntimeException("You need to implement this.");
+         expressionResult = e;
+
     }
 
     @Override
     public void visit(ReturnStatement s) {
     	// TODO
-    	throw new RuntimeException("You need to implement this.");
+        s.getExpression().accept(this);
+        expressionResult = s.getExpression();
+        functionDefinition = null;
     }
 
     @Override
 	public void visit(Program p) {
     	// TODO
-    	throw new RuntimeException("You need to implement this.");
+    	//throw new RuntimeException("You need to implement this.");
+        List<FunctionDefinition> resultList = new ArrayList<>();
+
+        for(FunctionDefinition function : p.getFunctionList()){
+            function.accept(this);
+            resultList.add(functionDefinition);
+        }
+
+        programResult = new Program(resultList);
     	
     	/* OLD DEFINITION BELOW
     	p.getBlockStatement().accept(this);
