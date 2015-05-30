@@ -226,9 +226,6 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     @Override
     public void visit(FunctionCallExpression e) {
         expressionResult = e;
-
-        // I think here we need to implement the passing of arguments or smths
-        // maybe not... but it seems to be the only difference between Test 1&2 and 3...
     }
 
     @Override
