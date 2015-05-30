@@ -220,7 +220,6 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     
     @Override
     public void visit(FunctionDefinition f) {
-    	// TODO
         f.getBody().accept(this);
 
         for(Declaration declaration : f.getParameters()){
@@ -232,7 +231,6 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
 
     @Override
     public void visit(FunctionCallExpression e) {
-    	// TODO
          expressionResult = e;
 
         // I think here we need to implement the passing of arguments or smths
@@ -241,7 +239,6 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
 
     @Override
     public void visit(ReturnStatement s) {
-    	// TODO
         s.getExpression().accept(this);
         ReturnStatement returnStatement = new ReturnStatement(s.getFirstToken(),expressionResult);
         newStatements.add(returnStatement);
@@ -251,7 +248,6 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
 
     @Override
 	public void visit(Program p) {
-    	// TODO
         List<FunctionDefinition> resultList = new ArrayList<>();
 
         for(FunctionDefinition function : p.getFunctionList()){
