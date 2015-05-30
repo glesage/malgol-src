@@ -9,9 +9,7 @@ import malgol.ast.*;
 import malgol.common.Operator;
 import malgol.type.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 //public class SimplifyExpressionsVisitor extends RemoveStructuredControlVisitor {}
 
@@ -98,7 +96,7 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
         Statement newPrint = new PrintStatement(null, expressionResult);
         newStatements.add(newPrint);
         convertToSingleStatement();
-        newStatements.get(0).addLabels(s.getLabels());    
+        newStatements.get(0).addLabels(s.getLabels());
     }
 
     @Override
@@ -222,11 +220,7 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     public void visit(FunctionDefinition f) {
         f.getBody().accept(this);
 
-        for(Declaration declaration : f.getParameters()){
-            declaration.accept(this);
-        }
-
-        functionDefinition = new FunctionDefinition(f.getFirstToken(), f.getReturnType(), f.getName(), newDeclarations, blockStatement);
+        functionDefinition = new FunctionDefinition(f.getFirstToken(), f.getReturnType(), f.getName(), f.getParameters(), blockStatement);
     }
 
     @Override
@@ -240,7 +234,7 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
     @Override
     public void visit(ReturnStatement s) {
         s.getExpression().accept(this);
-        ReturnStatement returnStatement = new ReturnStatement(s.getFirstToken(),expressionResult);
+        ReturnStatement returnStatement = new ReturnStatement(s.getFirstToken(), expressionResult);
         newStatements.add(returnStatement);
 
         functionDefinition = null;
