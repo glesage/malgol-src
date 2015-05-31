@@ -4,7 +4,7 @@ import malgol.ast.*;
 import malgol.common.Label;
 
 /**
- * 
+ *
  * @author WMarrero
  */
 public class UntypedAST2CVisitor implements ASTVisitor {
@@ -242,7 +242,7 @@ public class UntypedAST2CVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(Program p) {
-		clear();		
+		clear();
 		buf.append("#include <stdio.h>");
 		buf.append(newLine);
 		for (FunctionDefinition f : p.getFunctionList()) {
