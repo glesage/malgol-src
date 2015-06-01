@@ -236,11 +236,13 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
 
     @Override
     public void visit(ReturnStatement s) {
-        s.getExpression().accept(this);
+        /*s.getExpression().accept(this);
         ReturnStatement returnStatement = new ReturnStatement(s.getFirstToken(), expressionResult);
         newStatements.add(returnStatement);
 
-        functionDefinition = null;
+        functionDefinition = null;*/
+        freshResultVariables();
+        newStatements.add(s);
     }
 
     @Override
