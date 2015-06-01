@@ -239,7 +239,7 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
 
     @Override
 	public void visit(Program p) {
-        List<FunctionDefinition> resultList = new ArrayList<>();
+        LinkedList<FunctionDefinition> resultList = new LinkedList<>();
 
         for(FunctionDefinition function : p.getFunctionList()){
             function.accept(this);
