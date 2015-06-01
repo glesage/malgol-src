@@ -225,7 +225,13 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
 
     @Override
     public void visit(FunctionCallExpression e) {
-        expressionResult = e;
+
+        freshResultVariables();
+        VariableExpression newVar = VariableExpression.freshTemporary("functionCall");
+        newVar.setType(e.getType());
+        newStatements.add(new AssignmentStatement(null, newVar, e));
+        newDeclarations.add(new Declaration(null, newVar.getName(), e.getType()));
+        expressionResult = newVar;
     }
 
     @Override
