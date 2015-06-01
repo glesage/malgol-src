@@ -225,11 +225,28 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
 
     @Override
     public void visit(FunctionCallExpression e) {
+        freshResultVariables();
+
+        LinkedList<Expression> newExpressions = new LinkedList<>();
+        LinkedList<Statement> statements = new LinkedList<>();
+        LinkedList<Declaration> declarations = new LinkedList<>();
+
+        for(Expression exp : e.getArguments()){
+            exp.accept(this);
+            newExpressions.add(expressionResult);
+            statements.addAll(newStatements);
+            declarations.addAll(newDeclarations);
+        }
 
         freshResultVariables();
+
+        newStatements = statements;
+        newDeclarations = declarations;
+
         VariableExpression newVar = VariableExpression.freshTemporary("functionCall");
         newVar.setType(e.getType());
-        newStatements.add(new AssignmentStatement(null, newVar, e));
+        FunctionCallExpression functionCallExpression = new FunctionCallExpression(null, e.getName(), newExpressions);
+        newStatements.add(new AssignmentStatement(null, newVar, functionCallExpression));
         newDeclarations.add(new Declaration(null, newVar.getName(), e.getType()));
         expressionResult = newVar;
     }
@@ -253,7 +270,7 @@ public class SimplifyExpressionsVisitor implements ASTVisitor {
         }
 
         programResult = new Program(resultList);
-    	
+
     	/* OLD DEFINITION BELOW
     	p.getBlockStatement().accept(this);
 		assert(newDeclarations.size() == 0);
