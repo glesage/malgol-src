@@ -114,16 +114,26 @@ public class FrameLayoutVisitor implements ASTVisitor {
 		assert false : "DereferenceExpression visited in FrameLayoutVisitor";
 	}
 
+	// Custom Code
+
 	@Override
 	public void visit(FunctionDefinition d) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+
+		enterScope();
+		env.put(d, table);
+
+		for(Declaration decl : d.getParameters()) {
+			localSpaceUsed += decl.getType().getByteSize();
+			table.insert(decl.getName(), +localSpaceUsed);
+		}
+
+		dropScope();
 	}
 
 	@Override
 	public void visit(ReturnStatement s) {
 		// TODO
-		throw new RuntimeException("You need to implement this.");
+		//throw new RuntimeException("You need to implement this.");
 	}
 
 	@Override
@@ -134,8 +144,19 @@ public class FrameLayoutVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(Program p) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+
+		localSpaceUsed = 0;
+
+		enterScope();
+		env.put(p, table);
+
+		for(FunctionDefinition f : p.getFunctionList()) {
+			f.accept(this);
+		}
+
+		table.insert("", localSpaceUsed);
+
+		//dropScope();
 		
 		/* OLD DEFINITION BELOW
 		localSpaceUsed = 0;
