@@ -257,6 +257,22 @@ public class CodeGenerationVisitor implements ASTVisitor {
 			f.accept(this);
 		}
 
+		// DO WE NEED ANY OF THIS? Seems like main might be usefull to have
+//		// Generate assembly header
+//		buf.append(generateInstruction(".data"));
+//		buf.append(generateOneLabel(PRINTF_STRING));
+//		buf.append(generateInstruction(".ascii", "\"%d\\n\\0\""));
+//		buf.append(generateInstruction(".text"));
+//		buf.append(generateInstruction(".global _main"));
+//		buf.append(NEWLINE);
+//
+//		// Setup main entry
+//		buf.append(generateOneLabel("_main"));
+//		buf.append(generateInstruction("pushl", "%ebp"));
+//		buf.append(generateInstruction("movl", "%esp", "%ebp"));
+//		buf.append(generateInstruction("subl",
+//				"$" + currentLocationTable.lookup(""), "%esp"));
+
 		// Setup main exit
 		buf.append(generateInstruction("leave"));
 		buf.append(generateInstruction("ret"));
