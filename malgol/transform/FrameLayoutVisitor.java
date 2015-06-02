@@ -9,6 +9,7 @@ import malgol.common.LocationTable;
 public class FrameLayoutVisitor implements ASTVisitor {
 	
 	private int localSpaceUsed;
+	private int outgoingSpaceUsed;
 	private LocationTable table = null;
 	private final Map<ASTNode, LocationTable> env = new HashMap<ASTNode, LocationTable>();
 	
@@ -118,53 +119,40 @@ public class FrameLayoutVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(FunctionDefinition d) {
+		localSpaceUsed = 0;
+		outgoingSpaceUsed = 8;
 
 		enterScope();
-		env.put(d, table);
 
-		for(Declaration decl : d.getParameters()) {
-			localSpaceUsed += decl.getType().getByteSize();
-			table.insert(decl.getName(), +localSpaceUsed);
+		int location = 8;
+		for (Declaration declaration : d.getParameters()) {
+			table.insert(declaration.getName(), location);
+			location += declaration.getType().getByteSize();
 		}
 
+		d.getBody().accept(this);
+		table.insert("", localSpaceUsed + outgoingSpaceUsed);
+		env.put(d, table);
 		dropScope();
 	}
 
 	@Override
 	public void visit(ReturnStatement s) {
-		// TODO
-		//throw new RuntimeException("You need to implement this.");
+		//do nothing
 	}
 
 	@Override
 	public void visit(FunctionCallExpression e) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+		for( Expression exp : e.getArguments()){
+			outgoingSpaceUsed += exp.getType().getByteSize();
+		}
 	}
 
 	@Override
 	public void visit(Program p) {
 
-		localSpaceUsed = 0;
-
-		enterScope();
-		env.put(p, table);
-
 		for(FunctionDefinition f : p.getFunctionList()) {
 			f.accept(this);
 		}
-
-		table.insert("", localSpaceUsed);
-
-		//dropScope();
-		
-		/* OLD DEFINITION BELOW
-		localSpaceUsed = 0;
-		outgoingSpaceUsed = 8;
-		enterScope();
-		env.put(p, table);
-		p.getBlockStatement().accept(this);
-		table.insert("", localSpaceUsed+outgoingSpaceUsed);
-		*/
 	}
 }
