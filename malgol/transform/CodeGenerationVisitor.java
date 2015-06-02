@@ -274,7 +274,7 @@ public class CodeGenerationVisitor implements ASTVisitor {
 		buf.append( generateInstruction("subl", "$" + currentLocationTable.lookup(""), "%esp") );
 		symbolTable.createNewScope();
 		for ( Declaration declaration : d.getParameters() ) {
-			String name = d.getName();
+			String name = declaration.getName();
 			Type type = declaration.getType();
 			int location = currentLocationTable.lookup(name);
 			Symbol sym = Symbol.newVariableSymbol(name, type, true, location);
@@ -287,9 +287,26 @@ public class CodeGenerationVisitor implements ASTVisitor {
 	@Override
 	public void visit(ReturnStatement s) {
 		buf.append(generateLabels(s));
+		buf.append("### RETURN " + s.getExpression() + NEWLINE);
 		s.getExpression().accept(this);
 		buf.append(generateInstruction("leave"));
 		buf.append(generateInstruction("ret"));
+
+		/*buf.append(generateLabels(s));
+		buf.append("### PRINT " + s.getExpression() + NEWLINE);
+		s.getExpression().accept(this);
+		buf.append(generateInstruction("movl", "%eax", "4(%esp)"));
+		buf.append(generateInstruction("movl", '$' + PRINTF_STRING, "(%esp)"));
+		buf.append(generateInstruction("call", "_printf"));*/
+
+		/*buf.append(NEWLINE);
+		if ( !s.getLabels().isEmpty() ) {
+			buf.append( generateLabels(s) );
+			buf.append(NEWLINE);
+		}
+		s.getExpression().accept(this);
+		buf.append( generateInstruction("leave") );
+		buf.append( generateInstruction("ret") );*/
 	}
 
 	@Override

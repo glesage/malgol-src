@@ -119,17 +119,19 @@ public class FrameLayoutVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(FunctionDefinition d) {
+		localSpaceUsed = 0;
+		outgoingSpaceUsed = 8;
 
 		enterScope();
-		env.put(d, table);
 
 		for(Declaration decl : d.getParameters()) {
-			localSpaceUsed += decl.getType().getByteSize();
+			//localSpaceUsed += decl.getType().getByteSize();
 			table.insert(decl.getName(), +localSpaceUsed);
 		}
 
 		d.getBody().accept(this);
-
+		table.insert("", localSpaceUsed + outgoingSpaceUsed);
+		env.put(d, table);
 		dropScope();
 	}
 
