@@ -124,8 +124,10 @@ public class FrameLayoutVisitor implements ASTVisitor {
 
 		enterScope();
 
-		for(Declaration decl : d.getParameters()) {
-			table.insert(decl.getName(), +localSpaceUsed);
+		int location = 8;
+		for (Declaration declaration : d.getParameters()) {
+			table.insert(declaration.getName(), location);
+			location += declaration.getType().getByteSize();
 		}
 
 		d.getBody().accept(this);
