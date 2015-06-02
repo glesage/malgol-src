@@ -312,6 +312,14 @@ public class CodeGenerationVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(FunctionDefinition d) {
+
+		// Uncommenting this will make some weird error pop up.. try it out
+//		String name = d.getName();
+//		Type type = d.getReturnType();
+//		int location = currentLocationTable.lookup(d);
+//		Symbol sym = Symbol.newVariableSymbol(name, type, isParameter, location);
+//		symbolTable.insert(sym);
+
 		throw new RuntimeException("You need to implement this.");
 	}
 
