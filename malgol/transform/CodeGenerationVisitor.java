@@ -246,8 +246,22 @@ public class CodeGenerationVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(Program p) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+		// Clear buf
+		buf.setLength(0);
+
+		// Set up location table that holds frame size
+		currentLocationTable = locationInfo.get(p);
+
+		// Go through every function definition and accept it
+		for(FunctionDefinition f : p.getFunctionList()) {
+			f.accept(this);
+		}
+
+		// Setup main exit
+		buf.append(generateInstruction("leave"));
+		buf.append(generateInstruction("ret"));
+
+		// throw new RuntimeException("You need to implement this.");
 		
 		/*  OLD DEFINITION BELOW
 		// Clear buf
@@ -282,7 +296,6 @@ public class CodeGenerationVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(FunctionDefinition d) {
-		// TODO Auto-generated method stub
 		throw new RuntimeException("You need to implement this.");
 	}
 
