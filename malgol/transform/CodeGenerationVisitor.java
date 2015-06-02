@@ -288,8 +288,10 @@ public class CodeGenerationVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ReturnStatement s) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("You need to implement this.");
+		buf.append(generateLabels(s));
+		s.getExpression().accept(this);
+		buf.append(generateInstruction("leave"));
+		buf.append(generateInstruction("ret"));
 	}
 
 	@Override

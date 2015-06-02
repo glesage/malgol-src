@@ -9,6 +9,7 @@ import malgol.common.LocationTable;
 public class FrameLayoutVisitor implements ASTVisitor {
 	
 	private int localSpaceUsed;
+	private int outgoingSpaceUsed;
 	private LocationTable table = null;
 	private final Map<ASTNode, LocationTable> env = new HashMap<ASTNode, LocationTable>();
 	
@@ -127,25 +128,28 @@ public class FrameLayoutVisitor implements ASTVisitor {
 			table.insert(decl.getName(), +localSpaceUsed);
 		}
 
+		d.getBody().accept(this);
+
 		dropScope();
 	}
 
 	@Override
 	public void visit(ReturnStatement s) {
-		// TODO
-		//throw new RuntimeException("You need to implement this.");
+		//do nothing
 	}
 
 	@Override
 	public void visit(FunctionCallExpression e) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
+		for( Expression exp : e.getArguments()){
+			outgoingSpaceUsed += exp.getType().getByteSize();
+		}
 	}
 
 	@Override
 	public void visit(Program p) {
 
 		localSpaceUsed = 0;
+		outgoingSpaceUsed = 8;
 
 		enterScope();
 		env.put(p, table);
@@ -154,7 +158,7 @@ public class FrameLayoutVisitor implements ASTVisitor {
 			f.accept(this);
 		}
 
-		table.insert("", localSpaceUsed);
+		table.insert("", localSpaceUsed + outgoingSpaceUsed);
 
 		//dropScope();
 		
