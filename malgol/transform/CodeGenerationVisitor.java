@@ -246,9 +246,21 @@ public class CodeGenerationVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(Program p) {
-		// TODO
-		throw new RuntimeException("You need to implement this.");
-		
+		// Clear buf
+		buf.setLength(0);
+
+		// Generate assembly header
+		buf.append(generateInstruction(".data"));
+		buf.append(generateOneLabel(PRINTF_STRING));
+		buf.append(generateInstruction(".ascii", "\"%d\\n\\0\""));
+		buf.append(generateInstruction(".text"));
+		buf.append(generateInstruction(".global _main"));
+
+		// Recursive call on all function definitions.
+		for( FunctionDefinition function : p.getFunctionList() ){
+			function.accept(this);
+		}
+
 		/*  OLD DEFINITION BELOW
 		// Clear buf
 		buf.setLength(0);
