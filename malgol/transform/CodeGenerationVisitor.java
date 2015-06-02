@@ -260,42 +260,28 @@ public class CodeGenerationVisitor implements ASTVisitor {
 		for( FunctionDefinition function : p.getFunctionList() ){
 			function.accept(this);
 		}
-
-		/*  OLD DEFINITION BELOW
-		// Clear buf
-		buf.setLength(0);
-
-		// Set up location table that holds frame size
-		currentLocationTable = locationInfo.get(p);
-
-		// Generate assembly header
-		buf.append(generateInstruction(".data"));
-		buf.append(generateOneLabel(PRINTF_STRING));
-		buf.append(generateInstruction(".ascii", "\"%d\\n\\0\""));
-		buf.append(generateInstruction(".text"));
-		buf.append(generateInstruction(".global _main"));
-		buf.append(NEWLINE);
-
-		// Setup main entry
-		buf.append(generateOneLabel("_main"));
-		buf.append(generateInstruction("pushl", "%ebp"));
-		buf.append(generateInstruction("movl", "%esp", "%ebp"));
-		buf.append(generateInstruction("subl",
-				"$" + currentLocationTable.lookup(""), "%esp"));
-
-		// Recursive call on block.
-		p.getBlockStatement().accept(this);
-
-		// Setup main exit
-		buf.append(generateInstruction("leave"));
-		buf.append(generateInstruction("ret"));
-		*/
 	}
 
 	@Override
 	public void visit(FunctionDefinition d) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("You need to implement this.");
+		buf.append(NEWLINE);
+		buf.append( generateOneLabel( "_" + d.getName() ) );
+		buf.append(NEWLINE);
+		// Get the location table that holds frame size and variable locations.
+		currentLocationTable = locationInfo.get(d);
+		buf.append( generateInstruction("pushl", "%ebp") );
+		buf.append( generateInstruction("movl", "%esp", "%ebp") );
+		buf.append( generateInstruction("subl", "$" + currentLocationTable.lookup(""), "%esp") );
+		symbolTable.createNewScope();
+		for ( Declaration declaration : d.getParameters() ) {
+			String name = d.getName();
+			Type type = declaration.getType();
+			int location = currentLocationTable.lookup(name);
+			Symbol sym = Symbol.newVariableSymbol(name, type, true, location);
+			symbolTable.insert(sym);
+		}
+		d.getBody().accept(this);
+		symbolTable.dropScope();
 	}
 
 	@Override
@@ -308,8 +294,27 @@ public class CodeGenerationVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(FunctionCallExpression e) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("You need to implement this.");
+
+		int counter = 0;
+		for( Expression exp : e.getArguments() ) {
+			exp.accept(this);
+			buf.append( generateInstruction("movl", "%eax", counter + "(%esp)") );
+			counter += 4;
+		}
+		buf.append( generateInstruction( "call", '_' + e.getName()) );
+
+		/*int argSize = e.getArguments().size();
+		if (argSize * 4 > currentLocationTable.lookup("")){
+			env.getFrameLayout().addOutgoing(argSize * 4 - env.getFrameLayout().currentOutgoingSize());
+		}
+		int stackPosition = 0;
+		for (Expression exp : e.getArguments()){
+			exp.accept(this);
+			buf.append(generateInstruction("movl", "%eax", ((stackPosition > 0) ? stackPosition : "") + "(%esp)"));
+			//buf.append(generateInstruction("movl", "%eax", stackPosition + "(%esp)"));
+			stackPosition += 4;
+		}
+		buf.append(generateInstruction("call", "_" + e.getName()));*/
 	}
 	
 	private static String generateIndentString(int size) {
