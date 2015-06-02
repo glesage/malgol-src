@@ -291,22 +291,6 @@ public class CodeGenerationVisitor implements ASTVisitor {
 		s.getExpression().accept(this);
 		buf.append(generateInstruction("leave"));
 		buf.append(generateInstruction("ret"));
-
-		/*buf.append(generateLabels(s));
-		buf.append("### PRINT " + s.getExpression() + NEWLINE);
-		s.getExpression().accept(this);
-		buf.append(generateInstruction("movl", "%eax", "4(%esp)"));
-		buf.append(generateInstruction("movl", '$' + PRINTF_STRING, "(%esp)"));
-		buf.append(generateInstruction("call", "_printf"));*/
-
-		/*buf.append(NEWLINE);
-		if ( !s.getLabels().isEmpty() ) {
-			buf.append( generateLabels(s) );
-			buf.append(NEWLINE);
-		}
-		s.getExpression().accept(this);
-		buf.append( generateInstruction("leave") );
-		buf.append( generateInstruction("ret") );*/
 	}
 
 	@Override
@@ -319,19 +303,6 @@ public class CodeGenerationVisitor implements ASTVisitor {
 			counter += 4;
 		}
 		buf.append( generateInstruction( "call", '_' + e.getName()) );
-
-		/*int argSize = e.getArguments().size();
-		if (argSize * 4 > currentLocationTable.lookup("")){
-			env.getFrameLayout().addOutgoing(argSize * 4 - env.getFrameLayout().currentOutgoingSize());
-		}
-		int stackPosition = 0;
-		for (Expression exp : e.getArguments()){
-			exp.accept(this);
-			buf.append(generateInstruction("movl", "%eax", ((stackPosition > 0) ? stackPosition : "") + "(%esp)"));
-			//buf.append(generateInstruction("movl", "%eax", stackPosition + "(%esp)"));
-			stackPosition += 4;
-		}
-		buf.append(generateInstruction("call", "_" + e.getName()));*/
 	}
 	
 	private static String generateIndentString(int size) {

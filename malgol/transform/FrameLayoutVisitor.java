@@ -154,14 +154,5 @@ public class FrameLayoutVisitor implements ASTVisitor {
 		for(FunctionDefinition f : p.getFunctionList()) {
 			f.accept(this);
 		}
-		
-		/* OLD DEFINITION BELOW
-		localSpaceUsed = 0;
-		outgoingSpaceUsed = 8;
-		enterScope();
-		env.put(p, table);
-		p.getBlockStatement().accept(this);
-		table.insert("", localSpaceUsed+outgoingSpaceUsed);
-		*/
 	}
 }
